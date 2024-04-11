@@ -5,6 +5,7 @@ import sys
 from PySide6.QtCore import QDir, QProcess, Qt
 from PySide6.QtGui import QAction, QScreen
 from PySide6.QtWidgets import QApplication, QMainWindow, QTreeView, QPushButton, QFileSystemModel, QMenu, QStatusBar, QWidget, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QStyle
+from pathlib import Path
 
 
 class FileManager(QMainWindow):
@@ -54,7 +55,6 @@ class FileManager(QMainWindow):
         parent_path = parent_node.data(0, Qt.UserRole).get("path")
         result = subprocess.run(["adb", "shell", f"cd {parent_path} && file *"], stdout=subprocess.PIPE, text=True)
         item_list = result.stdout.splitlines()
-
         for item in item_list:
             item = item.strip().split(":")
             name = item[0]
@@ -85,10 +85,15 @@ class FileManager(QMainWindow):
             self.process = QProcess(self)
             self.process.finished.connect(self.process_finished)
             self.process.start("adb", ["pull", android_file_path, pc_dir])
+            opener = "open" if sys.platform == "darwin" else "xdg-open"
+            file_name = Path(android_file_path).name
+            new_file = os.path.join(pc_dir, file_name)
+            subprocess.call([opener, new_file])
 
     def process_finished(self):
         self.statusBar().showMessage("Transfer completed.")
         self.process = None
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
