@@ -13,7 +13,6 @@ class FileManager(QMainWindow):
 
         self.process = None
         self.setWindowTitle("Android File Manager")
-        self.setGeometry(100, 100, 800, 600)
 
         self.android_tree = QTreeWidget()
         self.android_tree.setHeaderLabel("/sdcard")
