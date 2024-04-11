@@ -46,7 +46,7 @@ class FileManager(QMainWindow):
         self.default_dir = "/sdcard"
         self.setStatusBar(QStatusBar(self))
 
-    def on_item_double_clicked(self, item, column):
+    def on_item_double_clicked(self, item):
         item_data = item.data(0, Qt.UserRole)
         if item_data.get("typ") == "directory":
             self.populate_tree(parent_node=item)
@@ -60,7 +60,7 @@ class FileManager(QMainWindow):
             name = item[0]
             typ = item[1].strip()
             sub_tree_item = QTreeWidgetItem(parent_node, [name])
-            sub_tree_item.setIcon(0, QApplication.style().standardIcon(QStyle.SP_DirIcon) if typ == "directory" else QApplication.style().standardIcon(QStyle.SP_FileIcon))
+            sub_tree_item.setIcon(0, QApplication.style().standardIcon(QStyle.StandardPixmap.SP_DirIcon) if typ == "directory" else QApplication.style().standardIcon(QStyle.StandardPixmap.SP_FileIcon))
             current_path = parent_path + "/" + name
             sub_tree_item.setData(0, Qt.UserRole, {"name": name, "typ": typ, "path": current_path})
 
