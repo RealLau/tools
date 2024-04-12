@@ -7,7 +7,10 @@ from PySide6.QtGui import QAction, QScreen
 from PySide6.QtWidgets import QApplication, QMainWindow, QTreeView, QPushButton, QFileSystemModel, QMenu, QStatusBar, QWidget, QHBoxLayout, QTreeWidget, QTreeWidgetItem, QStyle
 from pathlib import Path
 
-
+def clear_children(tree_item):
+    while tree_item.childCount() > 0:
+        child = tree_item.child(0)
+        tree_item.removeChild(child)
 class FileManager(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -54,6 +57,12 @@ class FileManager(QMainWindow):
     def populate_tree(self, parent_node):
         parent_path = parent_node.data(0, Qt.UserRole).get("path")
         result = subprocess.run(["adb", "shell", f"cd {parent_path} && file *"], stdout=subprocess.PIPE, text=True)
+        if "no devices/emulators" in result.stdout:
+            self.statusBar().showMessage("no devices connected")
+            return
+
+        clear_children(parent_node)
+
         item_list = result.stdout.splitlines()
         for item in item_list:
             item = item.strip().split(":")
