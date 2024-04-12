@@ -82,17 +82,17 @@ class FileManager(QMainWindow):
             return
         if pc_dir and android_file_path:
             self.statusBar().showMessage("Transferring...")
-            self.process = QProcess(self)
-            self.process.finished.connect(self.process_finished)
-            self.process.start("adb", ["pull", android_file_path, pc_dir])
-            opener = "open" if sys.platform == "darwin" else "xdg-open"
             file_name = Path(android_file_path).name
             new_file = os.path.join(pc_dir, file_name)
-            subprocess.call([opener, new_file])
+            self.process = QProcess(self)
+            self.process.finished.connect(lambda: self.process_finished(new_file))
+            self.process.start("adb", ["pull", android_file_path, pc_dir])
 
-    def process_finished(self):
+    def process_finished(self, image_path):
         self.statusBar().showMessage("Transfer completed.")
         self.process = None
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
+        subprocess.call([opener, image_path])
 
 
 if __name__ == "__main__":
